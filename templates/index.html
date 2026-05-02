@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HITAM AI Chatbot</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+        }
+
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #0b5ed7;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #ffffff;
+        }
+
+        .message {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 75%;
+        }
+
+        .user {
+            background: #d1e7dd;
+            align-self: flex-end;
+        }
+
+        .bot {
+            background: #e2e3e5;
+            align-self: flex-start;
+        }
+
+        .input-area {
+            display: flex;
+            padding: 10px;
+            background: #fff;
+            border-top: 1px solid #ccc;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background: #0b5ed7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #084298;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div class="header">🎓 HITAM AI Chatbot</div>
+
+    <div id="chat-box" class="chat-box"></div>
+
+    <div class="input-area">
+        <input id="msg" placeholder="Ask about HITAM..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
+
+<script>
+function sendMessage() {
+    let input = document.getElementById("msg");
+    let msg = input.value.trim();
+    let chatBox = document.getElementById("chat-box");
+
+    if (msg === "") return;
+
+    // User message
+    let userMsg = document.createElement("div");
+    userMsg.className = "message user";
+    userMsg.innerText = msg;
+    chatBox.appendChild(userMsg);
+
+    input.value = "";
+
+    // Fetch response
+    fetch("/chat", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let botMsg = document.createElement("div");
+        botMsg.className = "message bot";
+        botMsg.innerText = data.response;
+        chatBox.appendChild(botMsg);
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+    })
+    .catch(err => {
+        console.error(err);
+    });
+}
+
+// Enter key support
+document.getElementById("msg").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+        sendMessage();
+    }
+});
+</script>
+
+</body>
+</html>
